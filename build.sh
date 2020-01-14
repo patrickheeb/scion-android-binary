@@ -29,6 +29,7 @@ rm -f bazel-bin/go/scion-android/*/scion-android
 yes | ./env/deps
 make -C go/proto
 bazel build //go/scion-android --workspace_status_command=./tools/bazel-build-env
+bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_386 //go/scion-android --workspace_status_command=./tools/bazel-build-env
 bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_arm //go/scion-android --workspace_status_command=./tools/bazel-build-env
 bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_arm64 //go/scion-android --workspace_status_command=./tools/bazel-build-env
 for dir in `ls bazel-bin/go/scion-android`; do
