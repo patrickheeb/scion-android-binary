@@ -4,8 +4,8 @@
 export SCION_REPOSITORY=https://github.com/netsec-ethz/scion
 export SCION_COMMIT=3a2301a68b3f365d2c832b88d6640c9f34cd17df
 # to build latest SCION, use (this may require further modifications to keep up with changes in SCION):
-# export SCION_REPOSITORY=https://github.com/scionproto/scion
-# export SCION_COMMIT=master
+#export SCION_REPOSITORY=https://github.com/scionproto/scion
+#export SCION_COMMIT=master
 
 # install latest Go
 sudo add-apt-repository ppa:longsleep/golang-backports
