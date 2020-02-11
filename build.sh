@@ -42,7 +42,7 @@ for platform in "${!PLATFORMS[@]}"; do
 done
 
 # copy SCION executables to destination
-export VERSION=$(bazel-bin/go/scion-android/linux_amd64_stripped/scion-android godispatcher -lib_env_version | cut -d: -f2 | cut -d- -f1 | xargs)
+export VERSION=$(bazel-bin/go/scion-android/linux_amd64*/scion-android godispatcher -lib_env_version | cut -d: -f2 | cut -d- -f1 | xargs)
 for dir in `ls bazel-bin/go/scion-android`; do
 	export ARCH=$(echo $dir | cut -d_ -f1-2)
 	export TARGET_DIR=/vagrant/bin/$VERSION/${PLATFORMS[$ARCH]}

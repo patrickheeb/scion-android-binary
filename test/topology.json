@@ -1,0 +1,80 @@
+{
+  "BeaconService": {
+    "bs19-ffaa_1_cf4-1": {
+      "Addrs": {
+        "IPv4": {
+          "Public": {
+            "Addr": "192.168.0.3",
+            "L4Port": 31041
+          }
+        }
+      }
+    }
+  },
+  "BorderRouters": {
+    "br19-ffaa_1_cf4-1": {
+      "CtrlAddr": {
+        "IPv4": {
+          "Public": {
+            "Addr": "192.168.0.3",
+            "L4Port": 30045
+          }
+        }
+      },
+      "Interfaces": {
+        "1": {
+          "Bandwidth": 1000,
+          "ISD_AS": "19-ffaa:0:1303",
+          "LinkTo": "PARENT",
+          "MTU": 1472,
+          "Overlay": "UDP/IPv4",
+          "PublicOverlay": {
+            "Addr": "10.0.0.137",
+            "OverlayPort": 50000
+          },
+          "RemoteOverlay": {
+            "Addr": "10.0.8.1",
+            "OverlayPort": 50221
+          }
+        }
+      },
+      "InternalAddrs": {
+        "IPv4": {
+          "PublicOverlay": {
+            "Addr": "192.168.0.3",
+            "OverlayPort": 31045
+          }
+        }
+      }
+    }
+  },
+  "CertificateService": {
+    "cs19-ffaa_1_cf4-1": {
+      "Addrs": {
+        "IPv4": {
+          "Public": {
+            "Addr": "192.168.0.3",
+            "L4Port": 31042
+          }
+        }
+      }
+    }
+  },
+  "Core": false,
+  "Discovery": {},
+  "ISD_AS": "19-ffaa:1:cf4",
+  "MTU": 1472,
+  "Overlay": "UDP/IPv4",
+  "PathService": {
+    "ps19-ffaa_1_cf4-1": {
+      "Addrs": {
+        "IPv4": {
+          "Public": {
+            "Addr": "192.168.0.3",
+            "L4Port": 31043
+          }
+        }
+      }
+    }
+  }
+}

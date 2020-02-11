@@ -1,7 +1,7 @@
 [dispatcher]
 ID = "dispatcher"
 SocketFileMode = "0777"
-ApplicationSocket = "/data/local/tmp/dispatcher.sock"
+ApplicationSocket = "/tmp/dispatcher.sock"
 
 [metrics]
 Prometheus = "[127.0.0.1]:30441"
@@ -10,4 +10,4 @@ Prometheus = "[127.0.0.1]:30441"
 Level = "debug"
 MaxAge = 3
 MaxBackups = 1
-Path = "/data/local/tmp/dispatcher.log"
+Path = "/tmp/dispatcher.log"
