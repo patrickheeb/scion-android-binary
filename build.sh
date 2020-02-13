@@ -3,10 +3,10 @@ set -e
 
 # define compilation targets
 declare -A PLATFORMS
-PLATFORMS[linux_386]=x86
-PLATFORMS[linux_amd64]=x86_64
-PLATFORMS[linux_arm]=armeabi-v7a
-PLATFORMS[linux_arm64]=arm64-v8a
+PLATFORMS[android_386_cgo]=x86
+PLATFORMS[android_amd64_cgo]=x86_64
+PLATFORMS[android_arm_cgo]=armeabi-v7a
+PLATFORMS[android_arm64_cgo]=arm64-v8a
 
 # define compilation units
 export MAIN_FILES="beacon_srv/main.go border/main.go cert_srv/main.go godispatcher/main.go tools/logdog/main.go path_srv/main.go tools/scion-custpk-load/main.go sciond/main.go tools/scion-pki/main.go tools/scmp/main.go tools/showpaths/paths.go sig/main.go"
@@ -32,21 +32,25 @@ for f in `find go -name '*.go'`; do
     [ ! -f $f.orig ] && sed -E -i.orig 's/(flag\.[^"]+")([^"]*)"/\1'$(echo $(dirname $f) | tr '/' '_' | sed -e 's/go_//')'_\2"/' $f
 done
 
+# register Android NDK with Bazel
+grep -qF 'android_ndk_repository' WORKSPACE || (echo >> WORKSPACE &&
+	echo 'android_ndk_repository(name = "androidndk", path = "/home/vagrant/android-ndk")' >> WORKSPACE &&
+	echo 'register_toolchains("@androidndk//:all")' >> WORKSPACE)
+
 # build SCION for Android (Intel/AMD and ARM 32-bit and 64-bit)
-rm -rf /vagrant/bin
+rm -rf /vagrant/jniLibs
 rm -f bazel-bin/go/scion-android/*/scion-android
 yes | ./env/deps
 make -C go/proto
 for platform in "${!PLATFORMS[@]}"; do
-	bazel build --platforms=@io_bazel_rules_go//go/toolchain:$platform //go/scion-android --workspace_status_command=./tools/bazel-build-env
-done
+	# build with Bazel, use C crosscompiler provided by Android NDK
+	bazel build //go/scion-android \
+		--crosstool_top=@androidndk//:default_crosstool --host_crosstool_top=@bazel_tools//tools/cpp:toolchain --cpu="${PLATFORMS[$platform]}" \
+		--platforms=@io_bazel_rules_go//go/toolchain:$platform
 
-# copy SCION executables to destination
-export VERSION=$(bazel-bin/go/scion-android/linux_amd64*/scion-android godispatcher -lib_env_version | cut -d: -f2 | cut -d- -f1 | xargs)
-for dir in `ls bazel-bin/go/scion-android`; do
-	export ARCH=$(echo $dir | cut -d_ -f1-2)
-	export TARGET_DIR=/vagrant/bin/$VERSION/${PLATFORMS[$ARCH]}
+	# copy executable to destination, suitable to be imported in Android Studio
+	export TARGET_DIR=/vagrant/jniLibs/${PLATFORMS[$platform]}
 	mkdir -p $TARGET_DIR
-	cp bazel-bin/go/scion-android/$dir/scion-android $TARGET_DIR/libscion-android.so
+	cp bazel-bin/go/scion-android/*/scion-android $TARGET_DIR/libscion-android.so
 done
 popd

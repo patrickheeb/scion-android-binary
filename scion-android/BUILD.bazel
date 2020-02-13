@@ -26,4 +26,5 @@ scion_go_binary(
     name = "scion-android",
     embed = [":go_default_library"],
     visibility = ["//visibility:public"],
+    linkmode = "pie",
 )

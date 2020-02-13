@@ -1,29 +1,21 @@
 #!/bin/bash
+set -e
 
 # use this to set the version of SCION to be built:
 export SCION_REPOSITORY=https://github.com/scionproto/scion
 export SCION_COMMIT=v0.4.0
-export BAZEL_VERSION=0.25.3
-export ANDROID_SDK_VERSION=4333796
+export BAZEL_VERSION=2.1.0
 export ANDROID_NDK_VERSION=r20
 
-# install latest Go
+# install dependencies
 sudo add-apt-repository ppa:longsleep/golang-backports
 sudo apt-get -y update
-sudo apt-get -y install golang-go
+sudo apt-get -y install golang-go pkg-config zip g++ zlib1g-dev unzip python3
 
 # install Bazel
-sudo apt-get -y install pkg-config zip g++ zlib1g-dev unzip python3
 wget -q https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 bash ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh --user
 rm ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
-
-# install Android SDK
-mkdir /home/vagrant/android-sdk
-cd /home/vagrant/android-sdk
-wget -q https://dl.google.com/android/repository/sdk-tools-linux-${ANDROID_SDK_VERSION}.zip
-unzip -q sdk-tools-linux-${ANDROID_SDK_VERSION}.zip
-rm sdk-tools-linux-${ANDROID_SDK_VERSION}.zip
 
 # install Android NDK
 cd /home/vagrant
