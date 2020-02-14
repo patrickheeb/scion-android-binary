@@ -37,11 +37,13 @@ grep -qF 'android_ndk_repository' WORKSPACE || (echo >> WORKSPACE &&
 	echo 'android_ndk_repository(name = "androidndk", path = "/home/vagrant/android-ndk")' >> WORKSPACE &&
 	echo 'register_toolchains("@androidndk//:all")' >> WORKSPACE)
 
-# build SCION for Android (Intel/AMD and ARM 32-bit and 64-bit)
+# build SCION (Intel/AMD and ARM 32-bit and 64-bit for Android and a debug build for amd64 as well)
 rm -rf /vagrant/jniLibs
 rm -f bazel-bin/go/scion-android/*/scion-android
 yes | ./env/deps
 make -C go/proto
+bazel build //go/scion-android # debug build
+cp bazel-bin/go/scion-android/linux_amd64_stripped_pie/scion-android /vagrant/test/libscion-android.so
 for platform in "${!PLATFORMS[@]}"; do
 	# build with Bazel, use C crosscompiler provided by Android NDK
 	bazel build //go/scion-android \
@@ -52,5 +54,6 @@ for platform in "${!PLATFORMS[@]}"; do
 	export TARGET_DIR=/vagrant/jniLibs/${PLATFORMS[$platform]}
 	mkdir -p $TARGET_DIR
 	cp bazel-bin/go/scion-android/*/scion-android $TARGET_DIR/libscion-android.so
+	rm -f bazel-bin/go/scion-android/*/scion-android
 done
 popd
