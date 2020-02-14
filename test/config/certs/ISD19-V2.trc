@@ -1,0 +1,33 @@
+{
+  "CertLogs": {},
+  "CoreASes": {
+    "19-ffaa:0:1301": {
+      "OfflineKey": "lMUnza4y3MhuPOmdyqs2fvFxSZOQ2m3amVyTtkRuDMY=",
+      "OfflineKeyAlg": "ed25519",
+      "OnlineKey": "HDpwqryLb++XQiegy/t/594Lqgq1XDAfHbwxoTbw80I=",
+      "OnlineKeyAlg": "ed25519"
+    },
+    "19-ffaa:0:1302": {
+      "OfflineKey": "4GR93Zk9rXQL7ow3qXEINhEbs+nckqZnyWNtqWzTxj0=",
+      "OfflineKeyAlg": "ed25519",
+      "OnlineKey": "m8IoYZ721wJmIiJD+42b8RqKRHrUa61Hx9uoogI5i6A=",
+      "OnlineKeyAlg": "ed25519"
+    }
+  },
+  "CreationTime": 1561547959,
+  "Description": "ISD 19 (EU)",
+  "ExpirationTime": 1593083959,
+  "GracePeriod": 0,
+  "ISD": 19,
+  "Quarantine": false,
+  "QuorumCAs": 0,
+  "QuorumTRC": 2,
+  "RAINS": {},
+  "RootCAs": {},
+  "Signatures": {
+    "19-ffaa:0:1301": "bV8fZmzjSg8GlWfDudJ0jLo8CX9+BlHI1HS7yUa/KlhsOT6l6XvpeXyaujGdqjXiErsHPmbL6jGG/T6KIIlMBQ==",
+    "19-ffaa:0:1302": "nZ8mz9erD+gtGxeOmavCW70vJX3W/dnSaOr+eSUVHoblpRbje5PqYaswTWGpYxEATDrI2PdEpe/SI+i5q5+vDA=="
+  },
+  "ThresholdEEPKI": 0,
+  "Version": 2
+}

@@ -32,6 +32,15 @@ for f in `find go -name '*.go'`; do
     [ ! -f $f.orig ] && sed -E -i.orig 's/(flag\.[^"]+")([^"]*)"/\1'$(echo $(dirname $f) | tr '/' '_' | sed -e 's/go_//')'_\2"/' $f
 done
 
+# the dispatcher socket path is hardcoded; instead, we want to read it from an environment variable
+[ ! -f go/lib/sock/reliable/reliable.go.orig2 ] && (
+	sed -E -i.orig2 's/import.*\(/import ("os"/' go/lib/sock/reliable/reliable.go && # add the "os" package
+	sed -E -i.orig3 's/DefaultDispPath.*=.*//' go/lib/sock/reliable/reliable.go && # remove the hardcoded dispatcher socket path
+	# re-add the path as environment variable
+	echo >> go/lib/sock/reliable/reliable.go &&
+	echo 'func getEnv(key, fallback string) string { if value, ok := os.LookupEnv(key); ok { return value }; return fallback }' >> go/lib/sock/reliable/reliable.go &&
+	echo 'var ( DefaultDispPath = getEnv("DISPATCHER_SOCKET", "/run/shm/dispatcher/default.sock") )' >> go/lib/sock/reliable/reliable.go)
+
 # register Android NDK with Bazel
 grep -qF 'android_ndk_repository' WORKSPACE || (echo >> WORKSPACE &&
 	echo 'android_ndk_repository(name = "androidndk", path = "/home/vagrant/android-ndk")' >> WORKSPACE &&
