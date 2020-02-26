@@ -60,8 +60,8 @@ done
 
 # the dispatcher socket path is hardcoded; instead, we want to read it from an environment variable
 echo "Exposing dispatcher socket ..."
-[ ! -f go/lib/sock/reliable/reliable.go.orig ] && (
-	sed -E -i.orig 's/import.*\(/import ("os"/' go/lib/sock/reliable/reliable.go && # add the "os" package
+[ ! -f go/lib/sock/reliable/reliable.go.orig2 ] && (
+	sed -E -i.orig2 's/import.*\(/import ("os"/' go/lib/sock/reliable/reliable.go && # add the "os" package
 	sed -E -i 's/DefaultDispPath.*=.*//' go/lib/sock/reliable/reliable.go && # remove the hardcoded dispatcher socket path
 	# re-add the path as environment variable
 	echo >> go/lib/sock/reliable/reliable.go &&
