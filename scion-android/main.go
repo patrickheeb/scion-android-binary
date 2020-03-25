@@ -18,7 +18,7 @@ import (
 )
 
 func main() {
-	usage := "Please supply a SCION binary as the first argument.\nValid binaries include: beacon_srv border cert_srv godispatcher logdog path_srv scion-custpk-load sciond scion-pki scmp showpaths sig\n"
+	usage := "Please supply a SCION binary as the first argument.\nValid binaries include: beacon_srv border cert_srv godispatcher logdog path_srv scion-custpk-load sciond scion-pki scmp showpaths sig sensorfetcher sensorserver\n"
 	if len(os.Args) < 2 {
 		os.Stderr.WriteString(usage)
 		os.Exit(1)
@@ -51,6 +51,10 @@ func main() {
 		showpaths.AndroidMain()
 	case "sig":
 		sig.AndroidMain()
+	case "sensorfetcher":
+		Sensorfetcher()
+	case "sensorserver":
+		Sensorserver()
 	default:
 		os.Stderr.WriteString(usage)
 		os.Exit(1)

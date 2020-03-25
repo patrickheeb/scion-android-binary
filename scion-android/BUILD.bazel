@@ -3,7 +3,7 @@ load("//:scion.bzl", "scion_go_binary")
 
 go_library(
     name = "go_default_library",
-    srcs = ["main.go"],
+    srcs = ["main.go", "sensorfetcher.go", "sensorserver.go", "initialization.go", "hosts.go", "path_selection.go"],
     importpath = "github.com/scionproto/scion/go/scion-android",
     visibility = ["//visibility:private"],
     deps = [
@@ -19,6 +19,11 @@ go_library(
         "//go/tools/scmp:go_default_library",
         "//go/tools/showpaths:go_default_library",
         "//go/sig:go_default_library",
+        "//go/lib/addr:go_default_library",
+        "//go/lib/sciond:go_default_library",
+        "//go/lib/snet:go_default_library",
+        "//go/lib/sock/reliable:go_default_library",
+        "//go/lib/spath/spathmeta:go_default_library",
     ],
 )
 
