@@ -113,6 +113,10 @@ for platform in "${!PLATFORMS[@]}"; do
 	export TARGET_DIR=/vagrant/jniLibs/${PLATFORMS[$platform]}
 	mkdir -p $TARGET_DIR
 	cp bazel-bin/go/scion-android/*/scion-android $TARGET_DIR/libscion-$SCION_NAME.so
+	# patch TLS segment alignment for ARM executables, which is necessary on Android Q
+	if [ $platform = "android_arm_cgo" ] || [ $platform = "android_arm64_cgo" ]; then
+		/vagrant/tls_segment_alignment_patch.py $TARGET_DIR/libscion-$SCION_NAME.so
+	fi
 	rm -f bazel-bin/go/scion-android/*/scion-android
 done
 
