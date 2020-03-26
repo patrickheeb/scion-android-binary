@@ -34,8 +34,8 @@ echo 'export PATH="$HOME/.local/bin:$GOPATH/bin:$PATH"' >> ~/.profile
 source ~/.profile
 mkdir -p "$GOPATH"
 
-echo "Building SCION release v0.4.0 ..."
-SCION_NAME=v0.4.0 SCION_REPOSITORY=https://github.com/scionproto/scion SCION_COMMIT=v0.4.0 /vagrant/build.sh
+# echo "Building SCION release v0.4.0 ..."
+# SCION_NAME=v0.4.0 SCION_REPOSITORY=https://github.com/scionproto/scion SCION_COMMIT=v0.4.0 /vagrant/build.sh
 
 echo "Building scionlab fork ..." # for reproducibility, fix a specific commit instead of SCION_COMMIT=scionlab
 SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=5ceec527f99d551c9e2a3f99eeaf7e5451231d20 /vagrant/build.sh
