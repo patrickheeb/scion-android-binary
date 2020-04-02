@@ -14,7 +14,8 @@ rm /vagrant/link
 echo "Installing dependencies ..."
 sudo add-apt-repository ppa:longsleep/golang-backports > /dev/null 2>&1
 sudo apt-get -qq -y update > /dev/null
-sudo apt-get -qq -y install golang-go pkg-config zip g++ zlib1g-dev unzip python3 moreutils > /dev/null
+sudo apt-get -qq -y install golang-go pkg-config zip g++ zlib1g-dev unzip python3 python3-setuptools moreutils > /dev/null
+sudo ln -s /usr/bin/python3 /usr/bin/python
 
 echo "Installing Bazel ..."
 wget -q https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
@@ -34,10 +35,7 @@ echo 'export PATH="$HOME/.local/bin:$GOPATH/bin:$PATH"' >> ~/.profile
 source ~/.profile
 mkdir -p "$GOPATH"
 
-# echo "Building SCION release v0.4.0 ..."
-# SCION_NAME=v0.4.0 SCION_REPOSITORY=https://github.com/scionproto/scion SCION_COMMIT=v0.4.0 /vagrant/build.sh
-
 echo "Building scionlab fork ..." # for reproducibility, fix a specific commit instead of SCION_COMMIT=scionlab
-SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=5ceec527f99d551c9e2a3f99eeaf7e5451231d20 /vagrant/build.sh
+SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=f3f09755a921fd50a244a70dc5c7cc5fe2fc1500 /vagrant/build.sh
 
 echo "Done."

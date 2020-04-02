@@ -3,13 +3,10 @@ package main
 import (
 	"os"
 
-	beacon_srv "github.com/scionproto/scion/go/beacon_srv"
 	border "github.com/scionproto/scion/go/border"
-	cert_srv "github.com/scionproto/scion/go/cert_srv"
+	cs "github.com/scionproto/scion/go/cs"
 	godispatcher "github.com/scionproto/scion/go/godispatcher"
 	logdog "github.com/scionproto/scion/go/tools/logdog"
-	path_srv "github.com/scionproto/scion/go/path_srv"
-	scion_custpk_load "github.com/scionproto/scion/go/tools/scion-custpk-load"
 	sciond "github.com/scionproto/scion/go/sciond"
 	scion_pki "github.com/scionproto/scion/go/tools/scion-pki"
 	scmp "github.com/scionproto/scion/go/tools/scmp"
@@ -18,7 +15,7 @@ import (
 )
 
 func main() {
-	usage := "Please supply a SCION binary as the first argument.\nValid binaries include: beacon_srv border cert_srv godispatcher logdog path_srv scion-custpk-load sciond scion-pki scmp showpaths sig sensorfetcher sensorserver\n"
+	usage := "Please supply a SCION binary as the first argument.\nValid binaries include: border cs godispatcher logdog scion-custpk-load sciond scion-pki scmp showpaths sig sensorfetcher sensorserver\n"
 	if len(os.Args) < 2 {
 		os.Stderr.WriteString(usage)
 		os.Exit(1)
@@ -27,20 +24,14 @@ func main() {
 	os.Args = append(os.Args[:1], os.Args[2:]...)
 
 	switch binary {
-	case "beacon_srv":
-		beacon_srv.AndroidMain()
 	case "border":
 		border.AndroidMain()
-	case "cert_srv":
-		cert_srv.AndroidMain()
+	case "cs":
+		cs.AndroidMain()
 	case "godispatcher":
 		godispatcher.AndroidMain()
 	case "logdog":
 		logdog.AndroidMain()
-	case "path_srv":
-		path_srv.AndroidMain()
-	case "scion-custpk-load":
-		scion_custpk_load.AndroidMain()
 	case "sciond":
 		sciond.AndroidMain()
 	case "scion-pki":

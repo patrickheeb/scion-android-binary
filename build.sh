@@ -31,8 +31,8 @@ if [ ! -z "$SCION_REPOSITORY" ] && [ ! -z "$SCION_COMMIT" ]; then
 fi
 
 # define compilation units
-export MAIN_FILES="beacon_srv/main.go border/main.go cert_srv/main.go godispatcher/main.go tools/logdog/main.go path_srv/main.go tools/scion-custpk-load/main.go sciond/main.go tools/scion-pki/main.go tools/scmp/main.go tools/showpaths/paths.go sig/main.go"
-export BAZEL_FILES="beacon_srv/BUILD.bazel border/BUILD.bazel cert_srv/BUILD.bazel godispatcher/BUILD.bazel tools/logdog/BUILD.bazel path_srv/BUILD.bazel tools/scion-custpk-load/BUILD.bazel sciond/BUILD.bazel tools/scion-pki/BUILD.bazel tools/scmp/BUILD.bazel tools/showpaths/BUILD.bazel sig/BUILD.bazel"
+export MAIN_FILES="border/main.go cs/main.go godispatcher/main.go tools/logdog/main.go sciond/main.go tools/scion-pki/main.go tools/scmp/main.go tools/showpaths/paths.go sig/main.go"
+export BAZEL_FILES="border/BUILD.bazel cs/BUILD.bazel godispatcher/BUILD.bazel tools/logdog/BUILD.bazel sciond/BUILD.bazel tools/scion-pki/BUILD.bazel tools/scmp/BUILD.bazel tools/showpaths/BUILD.bazel sig/BUILD.bazel"
 
 pushd "$GOPATH/src/github.com/scionproto/scion" > /dev/null
 
@@ -113,10 +113,6 @@ for platform in "${!PLATFORMS[@]}"; do
 	export TARGET_DIR=/vagrant/jniLibs/${PLATFORMS[$platform]}
 	mkdir -p $TARGET_DIR
 	cp bazel-bin/go/scion-android/*/scion-android $TARGET_DIR/libscion-$SCION_NAME.so
-	# patch TLS segment alignment for ARM executables, which is necessary on Android Q
-	if [ $platform = "android_arm_cgo" ] || [ $platform = "android_arm64_cgo" ]; then
-		/vagrant/tls_segment_alignment_patch.py $TARGET_DIR/libscion-$SCION_NAME.so
-	fi
 	rm -f bazel-bin/go/scion-android/*/scion-android
 done
 

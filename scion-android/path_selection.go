@@ -10,7 +10,7 @@
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
-// limitations under the License.package main
+// limitations under the License.
 
 package main
 
@@ -22,9 +22,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/scionproto/scion/go/lib/sciond"
+	"github.com/scionproto/scion/go/lib/addr"
 	"github.com/scionproto/scion/go/lib/snet"
-	"github.com/scionproto/scion/go/lib/spath/spathmeta"
 )
 
 // metrics for path selection
@@ -34,86 +33,102 @@ const (
 	Shortest               // metric for shortest path
 )
 
-// ChoosePathInteractive presents the user a selection of paths to choose from
-func ChoosePathInteractive(local, remote *snet.Addr) *sciond.PathReplyEntry {
-	if snet.DefNetwork == nil {
-		InitSCION(local)
+// ChoosePathInteractive presents the user a selection of paths to choose from.
+// If the remote address is in the local IA, return (nil, nil), without prompting the user.
+func ChoosePathInteractive(dst addr.IA) (snet.Path, error) {
+
+	paths, err := QueryPaths(dst)
+	if err != nil || len(paths) == 0 {
+		return nil, err
 	}
 
-	pathMgr := snet.DefNetwork.PathResolver()
-	pathSet := pathMgr.Query(context.Background(), local.IA, remote.IA, sciond.PathReqFlags{})
-	var appPaths []*spathmeta.AppPath
-	var selectedPath *spathmeta.AppPath
-
-	if len(pathSet) == 0 {
-		return nil
+	fmt.Printf("Available paths to %v\n", dst)
+	for i, path := range paths {
+		fmt.Printf("[%2d] %s\n", i, fmt.Sprintf("%s", path))
 	}
 
-	fmt.Printf("Available paths to %v\n", remote.IA)
-	i := 0
-	for _, path := range pathSet {
-		appPaths = append(appPaths, path)
-		i++
-	}
-
+	var selectedPath snet.Path
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
 		fmt.Printf("Choose path: ")
 		scanner.Scan()
 		pathIndexStr := scanner.Text()
 		pathIndex, err := strconv.Atoi(pathIndexStr)
-		if err == nil && 0 <= pathIndex && pathIndex < len(appPaths) {
-			selectedPath = appPaths[pathIndex]
+		if err == nil && 0 <= pathIndex && pathIndex < len(paths) {
+			selectedPath = paths[pathIndex]
 			break
 		}
-		fmt.Printf("ERROR: Invalid path index %v, valid indices range: [0, %v]\n", pathIndex, len(appPaths)-1)
+		fmt.Printf("ERROR: Invalid path index %v, valid indices range: [0, %v]\n", pathIndex, len(paths)-1)
 	}
-	entry := selectedPath.Entry
-	return entry
+	return selectedPath, nil
 }
 
 // ChoosePathByMetric chooses the best path based on the metric pathAlgo
-func ChoosePathByMetric(pathAlgo int, local, remote *snet.Addr) *sciond.PathReplyEntry {
-	if snet.DefNetwork == nil {
-		InitSCION(local)
+// If the remote address is in the local IA, return (nil, nil).
+func ChoosePathByMetric(pathAlgo int, dst addr.IA) (snet.Path, error) {
+
+	paths, err := QueryPaths(dst)
+	if err != nil || len(paths) == 0 {
+		return nil, err
 	}
-
-	pathMgr := snet.DefNetwork.PathResolver()
-	pathSet := pathMgr.Query(context.Background(), local.IA, remote.IA, sciond.PathReqFlags{})
-	var appPaths []*spathmeta.AppPath
-
-	i := 0
-	for _, path := range pathSet {
-		appPaths = append(appPaths, path)
-		i++
-	}
-
-	if len(pathSet) == 0 {
-		return nil
-	}
-
-	return pathSelection(pathSet, pathAlgo).Entry
+	return pathSelection(paths, pathAlgo), nil
 }
 
-func pathSelection(pathSet spathmeta.AppPathSet, pathAlgo int) *spathmeta.AppPath {
-	var selectedPath *spathmeta.AppPath
+// SetPath is a helper function to set the path on an snet.UDPAddr
+func SetPath(addr *snet.UDPAddr, path snet.Path) {
+	if path == nil {
+		addr.Path = nil
+		addr.NextHop = nil
+	} else {
+		addr.Path = path.Path()
+		addr.NextHop = path.OverlayNextHop()
+	}
+}
+
+// SetDefaultPath sets the first path returned by a query to sciond.
+// This is a no-op if if remote is in the local AS.
+func SetDefaultPath(addr *snet.UDPAddr) error {
+	paths, err := QueryPaths(addr.IA)
+	if err != nil || len(paths) == 0 {
+		return err
+	}
+	SetPath(addr, paths[0])
+	return nil
+}
+
+// QueryPaths queries the DefNetwork's sciond PathQuerier connection for paths to addr
+// If addr is in the local IA, an empty slice and no error is returned.
+func QueryPaths(ia addr.IA) ([]snet.Path, error) {
+	if ia == DefNetwork().IA {
+		return nil, nil
+	} else {
+		paths, err := DefNetwork().PathQuerier.Query(context.Background(), ia)
+		if err != nil || len(paths) == 0 {
+			return nil, err
+		}
+		return paths, nil
+	}
+}
+
+func pathSelection(paths []snet.Path, pathAlgo int) snet.Path {
+	var selectedPath snet.Path
 	var metric float64
 	// A path selection algorithm consists of a simple comparison function selecting the best path according
 	// to some path property and a metric function normalizing that property to a value in [0,1], where larger is better
 	// Available path selection algorithms, the metric returned must be normalized between [0,1]:
-	pathAlgos := map[int](func(spathmeta.AppPathSet) (*spathmeta.AppPath, float64)){
+	pathAlgos := map[int](func([]snet.Path) (snet.Path, float64)){
 		Shortest: selectShortestPath,
 		MTU:      selectLargestMTUPath,
 	}
 	switch pathAlgo {
 	case Shortest:
-		selectedPath, metric = pathAlgos[pathAlgo](pathSet)
+		selectedPath, metric = pathAlgos[pathAlgo](paths)
 	case MTU:
-		selectedPath, metric = pathAlgos[pathAlgo](pathSet)
+		selectedPath, metric = pathAlgos[pathAlgo](paths)
 	default:
 		// Default is to take result with best score
 		for _, algo := range pathAlgos {
-			cadidatePath, cadidateMetric := algo(pathSet)
+			cadidatePath, cadidateMetric := algo(paths)
 			if cadidateMetric > metric {
 				selectedPath = cadidatePath
 				metric = cadidateMetric
@@ -123,27 +138,27 @@ func pathSelection(pathSet spathmeta.AppPathSet, pathAlgo int) *spathmeta.AppPat
 	return selectedPath
 }
 
-func selectShortestPath(pathSet spathmeta.AppPathSet) (selectedPath *spathmeta.AppPath, metric float64) {
+func selectShortestPath(paths []snet.Path) (selectedPath snet.Path, metric float64) {
 	// Selects shortest path by number of hops
-	for _, appPath := range pathSet {
-		if selectedPath == nil || len(appPath.Entry.Path.Interfaces) < len(selectedPath.Entry.Path.Interfaces) {
-			selectedPath = appPath
+	for _, path := range paths {
+		if selectedPath == nil || len(path.Interfaces()) < len(selectedPath.Interfaces()) {
+			selectedPath = path
 		}
 	}
-	metricFn := func(rawMetric []sciond.PathInterface) (result float64) {
-		hopCount := float64(len(rawMetric))
+	metricFn := func(rawMetric int) (result float64) {
+		hopCount := float64(rawMetric)
 		midpoint := 7.0
 		result = math.Exp(-(hopCount - midpoint)) / (1 + math.Exp(-(hopCount - midpoint)))
 		return result
 	}
-	return selectedPath, metricFn(selectedPath.Entry.Path.Interfaces)
+	return selectedPath, metricFn(len(selectedPath.Interfaces()))
 }
 
-func selectLargestMTUPath(pathSet spathmeta.AppPathSet) (selectedPath *spathmeta.AppPath, metric float64) {
+func selectLargestMTUPath(paths []snet.Path) (selectedPath snet.Path, metric float64) {
 	// Selects path with largest MTU
-	for _, appPath := range pathSet {
-		if selectedPath == nil || appPath.Entry.Path.Mtu > selectedPath.Entry.Path.Mtu {
-			selectedPath = appPath
+	for _, path := range paths {
+		if selectedPath == nil || path.MTU() > selectedPath.MTU() {
+			selectedPath = path
 		}
 	}
 	metricFn := func(rawMetric uint16) (result float64) {
@@ -153,5 +168,5 @@ func selectLargestMTUPath(pathSet spathmeta.AppPathSet) (selectedPath *spathmeta
 		result = 1 / (1 + math.Exp(-tilt*(mtu-midpoint)))
 		return result
 	}
-	return selectedPath, metricFn(selectedPath.Entry.Path.Mtu)
+	return selectedPath, metricFn(selectedPath.MTU())
 }
