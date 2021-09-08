@@ -9,7 +9,7 @@ touch /tmp/dispatcher.log
 # start sciond
 rm -f /tmp/sciond.log
 touch /tmp/sciond.log
-DISPATCHER_SOCKET=/tmp/dispatcher.sock ./libscion-v0.4.0.so sciond -lib_env_config config/sd.toml &
+DISPATCHER_SOCKET=/tmp/dispatcher.sock ./libscion-scionlab.so sciond -lib_env_config config/sd.toml &
 
 # show logs
 tail -f /tmp/dispatcher.log -f /tmp/sciond.log

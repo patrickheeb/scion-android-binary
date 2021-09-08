@@ -23,6 +23,8 @@ import (
 	"os"
 	"strings"
 	"sync"
+
+	"github.com/scionproto/scion/go/lib/log"
 )
 
 const (
@@ -63,10 +65,13 @@ func parseInput() {
 }
 
 func Sensorserver() {
-	go parseInput()
+	go func() {
+		defer log.HandlePanic()
+		parseInput()
+	}()
 
 	// Fetch arguments from command line
-	port := flag.Uint("p", 40002, "Server Port")
+	port := flag.Uint("scion-android_p", 40002, "Server Port")
 	flag.Parse()
 
 	conn, err := ListenPort(uint16(*port))

@@ -3,15 +3,13 @@ package main
 import (
 	"os"
 
-	border "github.com/scionproto/scion/go/border"
 	cs "github.com/scionproto/scion/go/cs"
-	godispatcher "github.com/scionproto/scion/go/godispatcher"
-	logdog "github.com/scionproto/scion/go/tools/logdog"
+	dispatcher "github.com/scionproto/scion/go/dispatcher"
+	sig "github.com/scionproto/scion/go/posix-gateway"
+	border "github.com/scionproto/scion/go/posix-router"
+	scion "github.com/scionproto/scion/go/scion"
+	scion_pki "github.com/scionproto/scion/go/scion-pki"
 	sciond "github.com/scionproto/scion/go/sciond"
-	scion_pki "github.com/scionproto/scion/go/tools/scion-pki"
-	scmp "github.com/scionproto/scion/go/tools/scmp"
-	showpaths "github.com/scionproto/scion/go/tools/showpaths"
-	sig "github.com/scionproto/scion/go/sig"
 )
 
 func main() {
@@ -28,18 +26,14 @@ func main() {
 		border.AndroidMain()
 	case "cs":
 		cs.AndroidMain()
-	case "godispatcher":
-		godispatcher.AndroidMain()
-	case "logdog":
-		logdog.AndroidMain()
+	case "dispatcher":
+		dispatcher.AndroidMain()
 	case "sciond":
 		sciond.AndroidMain()
 	case "scion-pki":
 		scion_pki.AndroidMain()
-	case "scmp":
-		scmp.AndroidMain()
-	case "showpaths":
-		showpaths.AndroidMain()
+	case "scion":
+		scion.AndroidMain()
 	case "sig":
 		sig.AndroidMain()
 	case "sensorfetcher":
