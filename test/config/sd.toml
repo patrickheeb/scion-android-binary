@@ -1,25 +1,16 @@
 [general]
-ID = "sciond"
-ReconnectToDispatcher = true
-ConfigDir = "/vagrant/test/config/"
+id = "sciond"
+reconnect_to_dispatcher = true
+config_dir = "/vagrant/test/config/"
 
 [metrics]
-Prometheus = "[127.0.0.1]:30455"
+prometheus = "127.0.0.1:30455"
 
-[logging.file]
-Level = "debug"
-MaxAge = 3
-MaxBackups = 1
-Path = "/tmp/sciond.log"
+[log.console]
+level = "info"
 
-[sd]
-Public = "19-ffaa:1:cf4,[192.168.0.6]:0"
-Reliable = "/tmp/sciond.sock"
-SocketFileMode = "0777"
-Unix = "/tmp/sciond.unix"
+[trust_db]
+connection =  "/tmp/sciond.trust.db"
 
-[trustDB]
-Connection = "/tmp/sciond.trust.db"
-
-[sd.PathDB]
-Connection = "/tmp/sciond.path.db"
+[path_db]
+connection = "/tmp/sciond.path.db"
