@@ -64,10 +64,6 @@ echo "Exposing dispatcher socket ..."
 	echo 'func getEnv(key, fallback string) string { if value, ok := os.LookupEnv(key); ok { return value }; return fallback }' >> go/lib/sock/reliable/reliable.go &&
 	echo 'var ( DefaultDispPath = getEnv("DISPATCHER_SOCKET", "/run/shm/dispatcher/default.sock") )' >> go/lib/sock/reliable/reliable.go)
 
-# disable nogo linter (see https://github.com/bazelbuild/rules_go/issues/2172 , https://github.com/scionproto/scion/pull/3325 )
-echo "Disabling linter ..."
-[ ! -f WORKSPACE.orig ] && sed -E -i.orig 's/go_register_toolchains\(.*?nogo/# \0/' WORKSPACE
-
 # register Android NDK with Bazel
 echo "Registering Android NDK ..."
 grep -qF 'android_ndk_repository' WORKSPACE || (echo >> WORKSPACE &&
@@ -83,24 +79,25 @@ sudo chmod 777 -R /home/vagrant/.cache/bazel
 
 # build SCION (Intel/AMD and ARM 32-bit and 64-bit for Android and a debug build for amd64 as well)
 echo "Building SCION ..."
-rm -f bazel-bin/go/scion-android/*/scion-android
-make gazelle
 yes | ./env/deps
+make gazelle
 bazel build //go/scion-android # debug build
-cp bazel-bin/go/scion-android/*/scion-android /vagrant/test/libscion-$SCION_NAME.so
+cp bazel-out/k8-fastbuild-ST-*/bin/go/scion-android/scion-android_/scion-android /vagrant/test/libscion-$SCION_NAME.so
+sudo chmod 777 /vagrant/test/libscion-$SCION_NAME.so
+
 for platform in "${!PLATFORMS[@]}"; do
 	# build with Bazel, use C crosscompiler provided by Android NDK
 	bazel build //go/scion-android \
 		--crosstool_top=@androidndk//:default_crosstool \
+		--host_crosstool_top=@bazel_tools//tools/cpp:toolchain \
 		--cpu="${PLATFORMS[$platform]}" \
-		--host_crosstool_top=@bazel_tools//tools/cpp:toolchain 		
-		# --platforms=@io_bazel_rules_go//go/toolchain:$platform
+		--platforms=@io_bazel_rules_go//go/toolchain:$platform
 
 	# copy executable to destination, suitable to be imported in Android Studio
 	export TARGET_DIR=/vagrant/jniLibs/${PLATFORMS[$platform]}
 	mkdir -p $TARGET_DIR
-	cp bazel-bin/go/scion-android/*/scion-android $TARGET_DIR/libscion-$SCION_NAME.so
-	rm -f bazel-bin/go/scion-android/*/scion-android
+	cp bazel-out/${PLATFORMS[$platform]}-fastbuild-ST-*/bin/go/scion-android/scion-android_/scion-android \
+		$TARGET_DIR/libscion-$SCION_NAME.so
 done
 sudo chmod 777 -R /vagrant/jniLibs/
 popd > /dev/null

@@ -16,15 +16,6 @@ sudo add-apt-repository ppa:longsleep/golang-backports > /dev/null 2>&1
 sudo apt-get -qq -y update > /dev/null
 sudo apt-get -qq -y install golang-go pkg-config zip g++ zlib1g-dev unzip python3 python3-setuptools moreutils > /dev/null
 sudo ln -s /usr/bin/python3 /usr/bin/python
-# curl  -q -fsSL https://get.docker.com -o get-docker.sh
-# sudo sh get-docker.sh > /dev/null
-# sudo curl -q -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-# sudo chmod +x /usr/local/bin/docker-compose
-
-# echo "Installing Bazel ..."
-# wget -q https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
-# bash ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh --user > /dev/null
-# rm ./bazel-$BAZEL_VERSION-installer-linux-x86_64.sh
 
 echo "Installing Android NDK ..."
 cd /home/vagrant

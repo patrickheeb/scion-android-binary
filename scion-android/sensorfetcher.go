@@ -32,7 +32,7 @@ func check(e error) {
 
 func Sensorfetcher() {
 
-	serverAddrStr := flag.String("scion-android_s", "", "Server address (<ISD-AS,[IP]:port> or <hostname:port>)")
+	serverAddrStr := flag.String("s", "", "Server address (<ISD-AS,[IP]:port> or <hostname:port>)")
 	flag.Parse()
 
 	if len(*serverAddrStr) == 0 {

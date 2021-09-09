@@ -71,7 +71,7 @@ func Sensorserver() {
 	}()
 
 	// Fetch arguments from command line
-	port := flag.Uint("scion-android_p", 40002, "Server Port")
+	port := flag.Uint("p", 40002, "Server Port")
 	flag.Parse()
 
 	conn, err := ListenPort(uint16(*port))
