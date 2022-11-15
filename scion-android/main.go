@@ -36,10 +36,6 @@ func main() {
 		scion.AndroidMain()
 	case "sig":
 		sig.AndroidMain()
-	case "sensorfetcher":
-		Sensorfetcher()
-	case "sensorserver":
-		Sensorserver()
 	default:
 		os.Stderr.WriteString(usage)
 		os.Exit(1)

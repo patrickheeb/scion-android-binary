@@ -31,6 +31,6 @@ source ~/.profile
 mkdir -p "$GOPATH"
 
 echo "Building scionlab fork ..." # for reproducibility, fix a specific commit instead of SCION_COMMIT=scionlab
-SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=v2021.10 /vagrant/build.sh
+SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=fstreun/sig_static_addresses /vagrant/build.sh
 
 echo "Done."
