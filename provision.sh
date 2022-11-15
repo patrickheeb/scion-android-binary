@@ -15,7 +15,7 @@ echo "Installing dependencies ..."
 sudo add-apt-repository ppa:longsleep/golang-backports > /dev/null 2>&1
 sudo apt-get -qq -y update > /dev/null
 sudo apt-get -qq -y install golang-go pkg-config zip g++ zlib1g-dev unzip python3 python3-setuptools moreutils > /dev/null
-sudo ln -s /usr/bin/python3 /usr/bin/python
+sudo ln -sf /usr/bin/python3 /usr/bin/python
 
 echo "Installing Android NDK ..."
 cd /home/vagrant
@@ -31,6 +31,6 @@ source ~/.profile
 mkdir -p "$GOPATH"
 
 echo "Building scionlab fork ..." # for reproducibility, fix a specific commit instead of SCION_COMMIT=scionlab
-SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=fc081bebc9329e611b074722245c6e6e62e2b9fd /vagrant/build.sh
+SCION_NAME=scionlab SCION_REPOSITORY=https://github.com/netsec-ethz/scion SCION_COMMIT=v2021.10 /vagrant/build.sh
 
 echo "Done."
