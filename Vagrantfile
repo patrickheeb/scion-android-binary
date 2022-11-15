@@ -6,7 +6,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider "virtualbox" do |vb|
     # the default (1GB) does not suffice for building SCION
-    vb.memory = "4096"
+    vb.memory = 16384
+    vb.cpus = 8
     # required on a Windows host to allow "ln -s" on /vagrant
     vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
