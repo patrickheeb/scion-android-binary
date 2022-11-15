@@ -29,7 +29,7 @@ go_library(
         "//go/posix-router:go_default_library",
         "//go/scion:go_default_library",
         "//go/scion-pki:go_default_library",
-        "//go/sciond:go_default_library",
+        "//go/daemon:go_default_library",
     ],
 )
 

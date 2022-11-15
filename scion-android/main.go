@@ -9,7 +9,7 @@ import (
 	border "github.com/scionproto/scion/go/posix-router"
 	scion "github.com/scionproto/scion/go/scion"
 	scion_pki "github.com/scionproto/scion/go/scion-pki"
-	sciond "github.com/scionproto/scion/go/sciond"
+	daemon "github.com/scionproto/scion/go/daemon"
 )
 
 func main() {
@@ -29,7 +29,7 @@ func main() {
 	case "dispatcher":
 		dispatcher.AndroidMain()
 	case "sciond":
-		sciond.AndroidMain()
+		daemon.AndroidMain()
 	case "scion-pki":
 		scion_pki.AndroidMain()
 	case "scion":

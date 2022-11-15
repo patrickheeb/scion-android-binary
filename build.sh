@@ -27,8 +27,8 @@ if [ ! -z "$SCION_REPOSITORY" ] && [ ! -z "$SCION_COMMIT" ]; then
 fi
 
 # define compilation units
-export MAIN_FILES="posix-router/main.go cs/main.go dispatcher/main.go sciond/main.go scion-pki/main.go scion/scion.go  posix-gateway/main.go"
-export BAZEL_FILES="posix-router/BUILD.bazel cs/BUILD.bazel dispatcher/BUILD.bazel sciond/BUILD.bazel scion-pki/BUILD.bazel scion/BUILD.bazel posix-gateway/BUILD.bazel"
+export MAIN_FILES="posix-router/main.go cs/main.go dispatcher/main.go daemon/main.go scion-pki/main.go scion/scion.go  posix-gateway/main.go"
+export BAZEL_FILES="posix-router/BUILD.bazel cs/BUILD.bazel dispatcher/BUILD.bazel daemon/BUILD.bazel scion-pki/BUILD.bazel scion/BUILD.bazel posix-gateway/BUILD.bazel"
 
 pushd "$GOPATH/src/github.com/scionproto/scion" > /dev/null
 
